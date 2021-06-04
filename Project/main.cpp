@@ -11,7 +11,7 @@ int main()
 
 	time_t start, end;
 
-	ACTG test(30, 40000);
+	ACTG test(32, 2000000);
 	test.printSizeInfo();
 	test.init();
 

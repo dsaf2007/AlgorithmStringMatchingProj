@@ -6,7 +6,7 @@ ACTG::ACTG(int k_,int n_)//생성자
 {
 	n = n_;
 	k = k_;
-	for (int i = 0; i < 1000000; i++)
+	for (int i = 0; i < 100000000; i++)
 	{
 		ref_DNA_seq += random();
 	}
@@ -56,7 +56,7 @@ void ACTG::restore()
 	int mismatch;
 	for (int i = 0; i < short_read.size(); i++)
 	{
-		for (int j = 0; j < 1000000; j++)
+		for (int j = 0; j < 100000000; j++)
 		{
 			mismatch = 0;
 			for (int x = 0; x < k; x++)
@@ -100,7 +100,7 @@ void ACTG::BMRestore()
 void ACTG::compare()
 {
 	int miss = 0;
-	for (int i = 0; i < 1000000; i++)
+	for (int i = 0; i < 100000000; i++)
 	{
 		if (restore_seq[i] != my_DNA_seq[i])
 		{
@@ -108,7 +108,7 @@ void ACTG::compare()
 		}
 		
 	}
-	std::cout << "일치율 : " << ((double)(1000000-miss) / (double)1000000) * 100 << "%\n";
+	std::cout << "일치율 : " << ((double)(100000000 -miss) / (double)100000000) * 100 << "%\n";
 	std::cout << "불일치 문자 개수 : " << miss << std::endl;
 }
 

@@ -95,7 +95,7 @@ int search(std::vector<int> bad_table, std::vector<int> good_suffix_table, std::
 	{
 		int match = pattern_size;
 		int miss_match = 0;
-		while(match >0 && miss_match <3)
+		while(match >0 && miss_match <5)
 		{
 			if (match > 0 && pattern_str[match - 1] == plain_text[begin + (match - 1)])
 				--match;

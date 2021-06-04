@@ -1,0 +1,18 @@
+﻿  ACTG.cpp
+D:\repos\algorithm\Project\BoyerMoor.h(9,39): warning C4267: '초기화 중': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\repos\algorithm\Project\BoyerMoor.h(22,39): warning C4267: '초기화 중': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\repos\algorithm\Project\BoyerMoor.h(38,27): warning C4553: '==': 식의 결과가 사용되지 않습니다. '='을(를) 의도했습니까?
+D:\repos\algorithm\Project\BoyerMoor.h(59,36): warning C4267: '초기화 중': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\repos\algorithm\Project\BoyerMoor.h(60,39): warning C4267: '초기화 중': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\repos\algorithm\Project\ACTG.cpp(27,68): warning C4267: '인수': 'size_t'에서 '_Ty'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+          with
+          [
+              _Ty=int
+          ]
+  main.cpp
+  코드를 생성하고 있습니다.
+  74 of 301 functions (24.6%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    10 functions had inline decision re-evaluated but remain unchanged
+  코드를 생성했습니다.
+  Project.vcxproj -> D:\repos\algorithm\Project\x64\Release\Project.exe

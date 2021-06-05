@@ -1,31 +1,56 @@
 #pragma once
 #include "ACTG.h"
 #include "BoyerMoor.h"
+#include <time.h>
 
-ACTG::ACTG(int k_,int n_)//생성자
+ACTG::ACTG(int k_,int m_)//생성자
 {
-	n = n_;
+	M = m_;
 	k = k_;
-	for (int i = 0; i < 100000000; i++)
+	N = 1000000;
+	miss = 0;
+	for (int i = 0; i < N; i++)
 	{
 		ref_DNA_seq += random();
 	}
 	my_DNA_seq = ref_DNA_seq;
+	restore_seq = ref_DNA_seq;
 }
 
-ACTG::~ACTG(){}
-
-void ACTG::init()//short read를 생성한다.
+ACTG::~ACTG()
 {
-	for (int i = 0; i < my_DNA_seq.length(); i += k)
+	
+}
+
+void ACTG::initMyDNA(int x)//short read를 생성한다.
+{
+	for (int i = (x)*(my_DNA_seq.length()/20); i < ((x+1) * (my_DNA_seq.length() / 20))-k; i += k)
 	{
 		my_DNA_seq[i + rand() % k] = random();
 		my_DNA_seq[i + rand() % k] = random();
 	}
+	
+}
+
+void ACTG::exec_initMyDNA()
+{
+	std::vector<std::thread> My;
+
+	for (int i = 0; i < 20; i++)
+	{
+		My.emplace_back(std::thread(&ACTG::initMyDNA, this, i));
+	}
+	for (auto& init : My)
+		init.join();
+}
+
+void ACTG::makeShortread()
+{
 	std::random_device rd;
 	std::mt19937 gen(rd());
-	std::uniform_int_distribution<int> dis(0, my_DNA_seq.length()-k-1);
-	
+	std::uniform_int_distribution<int> dis(0, my_DNA_seq.length() - k - 1);
+	std::mutex g_lock;
+
 	for (int i = dis(gen); i < my_DNA_seq.length(); i = dis(gen))
 	{
 		std::string read_str = "";
@@ -34,11 +59,23 @@ void ACTG::init()//short read를 생성한다.
 			read_str += my_DNA_seq[i + j];
 		}
 		short_read.push_back(read_str);
-		if (short_read.size() == n)
+		if (short_read.size() == M)
 			break;
 	}
-	
 }
+
+//void ACTG::exec_makeShortread()
+//{
+//	std::vector<std::thread> read;
+//
+//	for (int i = 0; i < 20; i++)
+//	{
+//		read.emplace_back(std::thread(&ACTG::makeShortread, this));
+//	}
+//	for (auto& shortread : read)
+//		shortread.join();
+//}
+
 
 char ACTG::random()
 {
@@ -56,7 +93,7 @@ void ACTG::restore()
 	int mismatch;
 	for (int i = 0; i < short_read.size(); i++)
 	{
-		for (int j = 0; j < 100000000; j++)
+		for (int j = 0; j < N; j++)
 		{
 			mismatch = 0;
 			for (int x = 0; x < k; x++)
@@ -77,18 +114,19 @@ void ACTG::restore()
 	}
 }
 
-void ACTG::BMRestore()
+void ACTG::BMRestore(int x)
 {
-	restore_seq = ref_DNA_seq;
 	
-	for (int i = 0; i < short_read.size(); i++)
+
+
+	for(int i = (x) * (M / 20); i < (x+1)*(M/20) ; i++)
 	{
 		std::vector<int> bad_table = makeBad_table(short_read[i]);
 		std::vector<int> suffix_table = makeGoddsuffix_table(short_read[i]);
 		int index = search(bad_table, suffix_table, restore_seq, short_read[i]);
 		if (index > -1)
 		{
-			//std::cout << "found match\n";
+		
 			for (int j = 0; j < short_read[i].length(); j++)
 			{
 				restore_seq[index + j] = short_read[i][j];
@@ -97,10 +135,27 @@ void ACTG::BMRestore()
 	}
 }
 
-void ACTG::compare()
+void ACTG::execute()
 {
-	int miss = 0;
-	for (int i = 0; i < 100000000; i++)
+	std::cout << short_read.size() << std::endl;
+	start = time(NULL);
+	for (int i = 0; i < 20; i++)
+	{
+		threads.emplace_back(std::thread(&ACTG::BMRestore, this, i));
+	}
+	for (auto& thread : threads)
+		thread.join();
+	end = time(NULL);
+
+	elapse_time = (double)(end - start);
+
+
+}
+
+void ACTG::compare(int x)
+{
+
+	for (int i = (x)*(N/20); i < (x+1)*(N/20); i++)
 	{
 		if (restore_seq[i] != my_DNA_seq[i])
 		{
@@ -108,13 +163,29 @@ void ACTG::compare()
 		}
 		
 	}
-	std::cout << "일치율 : " << ((double)(100000000 -miss) / (double)100000000) * 100 << "%\n";
-	std::cout << "불일치 문자 개수 : " << miss << std::endl;
+
+}
+
+void ACTG::exec_compare()
+{
+	std::vector<std::thread> comp;
+
+	for (int i = 0; i < 20; i++)
+	{
+		comp.emplace_back(std::thread(&ACTG::compare, this, i));
+	}
+	for (auto& compare : comp)
+		compare.join();
 }
 
 
 void ACTG::makeText()
 {
+
+	std::ofstream writeResult("result.txt");
+	writeResult << "소요 시간 : " << elapse_time<<"\n";
+	writeResult << "일치율 : " << ((double)((N - miss) / (double)N)) * 100 << "%\n";
+	writeResult << "불일치 문자 개수 : " << miss << std::endl;
 	std::ofstream writeShortRead("short_read.txt");
 	std::ofstream myDNA("my_DNA.txt");
 	std::ofstream restore("restore_seq.txt");
@@ -128,5 +199,5 @@ void ACTG::makeText()
 
 void ACTG::printSizeInfo()
 {
-	std::cout << "number of short read : " << n << std::endl << "length of short read : " << k << std::endl;
+	std::cout << "number of short read : " << M << std::endl << "length of short read : " << k << std::endl;
 }

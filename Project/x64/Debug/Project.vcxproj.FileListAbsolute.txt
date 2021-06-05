@@ -1,0 +1,2 @@
+S:\repos\algorithm\Project\x64\Debug\Project.exe
+S:\repos\algorithm\Project\x64\Debug\Project.pdb

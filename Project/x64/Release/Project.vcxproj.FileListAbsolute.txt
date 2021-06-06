@@ -1,3 +1,0 @@
-D:\repos\algorithm\Project\x64\Release\Project.exe
-S:\repos\AlgorithmStringMatchingProj\Project\x64\Release\Project.exe
-S:\repos\algorithm\Project\x64\Release\Project.exe

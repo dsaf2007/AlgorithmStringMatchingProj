@@ -7,11 +7,9 @@
 
 int main()
 {
-	
-
 	time_t startx, endx;
 	startx = time(NULL);
-	ACTG test(30, 40000);
+	ACTG test(80, 10000);
 	test.printSizeInfo();
 	test.exec_initMyDNA();
 	test.makeShortread();
@@ -23,7 +21,4 @@ int main()
 	endx = time(NULL);
 	std::cout << "ÃÑ °É¸° ½Ã°£ : " << (double)(endx - startx) << "\n";
 	test.makeText();
-
-
-	
 }

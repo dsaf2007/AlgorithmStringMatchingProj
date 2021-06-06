@@ -1,9 +1,8 @@
 #pragma once
 #include <iostream>
 #include <vector>
-const int MAX_INT = 256;
 
-int toInt(char a)
+int toInt(char a)//알파벳 인덱싱
 {
 
 	if (a == 'A')
@@ -18,7 +17,7 @@ int toInt(char a)
 		return 4;
 }
 
-std::vector<int> makeBad_table(std::string pattern_str)
+std::vector<int> makeBad_table(std::string pattern_str)//불일치 문자 테이블
 {
 	int pattern_size = pattern_str.size();
 	std::vector<int> bad(5, pattern_size);
@@ -33,20 +32,22 @@ std::vector<int> makeBad_table(std::string pattern_str)
 
 
 
-std::vector<int> makeGoddsuffix_table(std::string pattern_str)
+std::vector<int> makeGoddsuffix_table(std::string pattern_str)//일치 접미부 테이블
 {
 	int pattern_size = pattern_str.size();
 
-	int pattern_pt = pattern_size; // 패턴 포인터
-	int suffix_pt = pattern_pt + 1;
+	int pattern_pt = pattern_size; // pattern point
+	int suffix_pt = pattern_pt + 1; // suffir point
 	
-	std::vector<int> suffix_table(pattern_size + 1, 0);
+	std::vector<int> suffix_table(pattern_size + 1, 0); //접미사와 문자열 체크
 	suffix_table[pattern_pt] = suffix_pt;
-	std::vector<int> skip_table(pattern_size + 1, 0);
+
+	std::vector<int> skip_table(pattern_size + 1, 0);//skip table
 
 	while (pattern_pt > 0)
 	{
-		while (suffix_pt <= pattern_size && 
+		
+		while (suffix_pt <= pattern_size && //일치하는 접미사 개수 측정
 			pattern_str[pattern_pt - 1] != pattern_str[suffix_pt - 1])
 		{
 			if (skip_table[suffix_pt] == 0)
@@ -55,7 +56,7 @@ std::vector<int> makeGoddsuffix_table(std::string pattern_str)
 			}
 			suffix_pt = suffix_table[suffix_pt];
 		}
-		suffix_table[--pattern_pt] = --suffix_pt;
+		suffix_table[--pattern_pt] = --suffix_pt; //일치 문자열이 suffix의 index를 가리키도록
 	}
 
 	suffix_pt = suffix_table[0];
@@ -70,7 +71,7 @@ std::vector<int> makeGoddsuffix_table(std::string pattern_str)
 	return skip_table;
 }
 
-int search(std::vector<int> bad_table, std::vector<int> good_suffix_table, std::string plain_text, std::string pattern_str)
+int search(std::vector<int> bad_table, std::vector<int> good_suffix_table, std::string plain_text, std::string pattern_str)//문자열 비교
 {
 	int plain_size = plain_text.size();
 	int pattern_size = pattern_str.size();
@@ -84,21 +85,22 @@ int search(std::vector<int> bad_table, std::vector<int> good_suffix_table, std::
 	{
 		int match = pattern_size;
 		int miss_match = 0;
-		while(match >0 && miss_match <5)
+		while(match >0 && miss_match <5)//miss match 4개 허용
 		{
 			if (match > 0 && pattern_str[match - 1] == plain_text[begin + (match - 1)])
-				--match;
+				match--;
 			else
 				miss_match++;
 
 		}
-			if (match == 0)
-				return begin;
+			if (match == 0) // 문자열 일치하는 경우
+				return begin; //일치 index 반환
 			if (bad_table[toInt(plain_text[begin + match])] != pattern_size)
 			{
-				begin += std::max(match - bad_table[toInt(plain_text[begin + match])], good_suffix_table[match]);
+				//불일치 문자 방책 다음 위치 = 본문 문자열 내 현재 index(begin) + (패턴 문자열 내 현재위치 - 테이블에서 참조 한 값)
+				begin += std::max(match - bad_table[toInt(plain_text[begin + match])], good_suffix_table[match]);//일치 접미부와 불일치 문자 방책 중 더 많이 이동할 수 있는 방식으로 이동
 			}
-			else
+			else // 불일치 문자가 패턴보다 뒤쪽에 있는 경우 
 			{
 				begin += std::max(good_suffix_table[match], match);
 			}

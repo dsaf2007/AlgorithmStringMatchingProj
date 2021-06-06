@@ -32,7 +32,7 @@ void ACTG::initMyDNA(int x)//short read를 생성한다.
 	
 }
 
-void ACTG::exec_initMyDNA()
+void ACTG::exec_initMyDNA()//멀티스레딩을 수행하기 위한 함수
 {
 	std::vector<std::thread> My;
 
@@ -64,20 +64,8 @@ void ACTG::makeShortread()
 	}
 }
 
-//void ACTG::exec_makeShortread()
-//{
-//	std::vector<std::thread> read;
-//
-//	for (int i = 0; i < 20; i++)
-//	{
-//		read.emplace_back(std::thread(&ACTG::makeShortread, this));
-//	}
-//	for (auto& shortread : read)
-//		shortread.join();
-//}
 
-
-char ACTG::random()
+char ACTG::random()//random characters
 {
 	std::random_device rd;
 	std::mt19937 gen(rd());
@@ -87,7 +75,7 @@ char ACTG::random()
 }
 
 
-void ACTG::restore()
+void ACTG::restore()//brute force
 {
 	restore_seq = ref_DNA_seq;
 	int mismatch;
@@ -100,7 +88,7 @@ void ACTG::restore()
 			{
 				if (short_read[i][x] != ref_DNA_seq[j + x])
 					mismatch++;
-				if (mismatch >= 2)
+				if (mismatch >= 4)
 					break;
 				if ((x == k - 1) && mismatch < 2)
 				{
@@ -114,11 +102,8 @@ void ACTG::restore()
 	}
 }
 
-void ACTG::BMRestore(int x)
+void ACTG::BMRestore(int x)//Boyer-Moor 알고리즘을 이용한 문자열 복원
 {
-	
-
-
 	for(int i = (x) * (M / 20); i < (x+1)*(M/20) ; i++)
 	{
 		std::vector<int> bad_table = makeBad_table(short_read[i]);
@@ -135,7 +120,7 @@ void ACTG::BMRestore(int x)
 	}
 }
 
-void ACTG::execute()
+void ACTG::execute()//BMRestore를 multi threading 하기 위한 함수
 {
 	std::cout << short_read.size() << std::endl;
 	start = time(NULL);
@@ -152,7 +137,7 @@ void ACTG::execute()
 
 }
 
-void ACTG::compare(int x)
+void ACTG::compare(int x)//My_DNA와 복원된 DNA 비교
 {
 
 	for (int i = (x)*(N/20); i < (x+1)*(N/20); i++)
@@ -166,7 +151,7 @@ void ACTG::compare(int x)
 
 }
 
-void ACTG::exec_compare()
+void ACTG::exec_compare()//compare 병렬처리
 {
 	std::vector<std::thread> comp;
 
@@ -179,7 +164,7 @@ void ACTG::exec_compare()
 }
 
 
-void ACTG::makeText()
+void ACTG::makeText()//결과 출력
 {
 
 	std::ofstream writeResult("result.txt");

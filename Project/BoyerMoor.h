@@ -3,17 +3,6 @@
 #include <vector>
 const int MAX_INT = 256;
 
-//std::vector<int> makeBad_table(std::string pattern_str)
-//{
-//	int pattern_size = pattern_str.size();
-//	std::vector<int> bad(MAX_INT, pattern_size);
-//
-//	for (int i = 0; i < pattern_size; i++)
-//	{
-//		bad[(int)pattern_str[i]] = i;
-//	}
-//	return bad;
-//}
 int toInt(char a)
 {
 
